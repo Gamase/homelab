@@ -1,0 +1,24 @@
+- resources:
+    cpu: true
+    memory: true
+    disk: /
+
+- openmeteo:
+    label: Tijuana
+    latitude: 32.5149
+    longitude: -117.0382
+    timezone: America/Tijuana
+    units: metric
+    cache: 5
+
+- datetime:
+    text_size: xl
+    locale: es-MX
+    format:
+      dateStyle: long
+      timeStyle: short
+      hour12: true
+
+- search:
+    provider: google
+    target: _blank

@@ -1,0 +1,18 @@
+- Accesos rápidos:
+    - WhatsApp:
+        - abbr: WA
+          href: https://web.whatsapp.com
+    - Gmail:
+        - abbr: GM
+          href: https://mail.google.com
+    - YouTube:
+        - abbr: YT
+          href: https://youtube.com
+
+- Entretenimiento:
+    - Netflix:
+        - abbr: NF
+          href: https://netflix.com
+    - Twitch:
+        - abbr: TW
+          href: https://twitch.tv

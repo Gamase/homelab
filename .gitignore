@@ -1,0 +1,17 @@
+# Secretos
+.env
+*.env
+!*.env.example
+rclone.conf
+*.key
+*.pem
+id_*
+AdGuardHome.yaml
+
+# Datos de los servicios
+data/
+letsencrypt/
+*.db
+*.sqlite
+*.log
+

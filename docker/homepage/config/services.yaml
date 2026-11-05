@@ -1,0 +1,23 @@
+- Familia:
+    - Archivos:
+        href: https://archivos.familiamtz.com
+        description: Archivos compartidos
+        icon: filebrowser.png
+
+- Servidor:
+    - Proxmox:
+        href: https://proxmox.familiamtz.com
+        description: Máquinas virtuales
+        icon: proxmox.png
+    - AdGuard:
+        href: https://adguard.familiamtz.com
+        description: Bloqueo de anuncios
+        icon: adguard-home.png
+    - Uptime Kuma:
+        href: https://kuma.familiamtz.com
+        description: Monitoreo
+        icon: uptime-kuma.png
+    - Nginx Proxy Manager:
+        href: https://npm.familiamtz.com
+        description: Nombres y certificados
+        icon: nginx-proxy-manager.png
