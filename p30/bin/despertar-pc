@@ -1,7 +1,19 @@
 #!/data/data/com.termux/files/usr/bin/python
+import os
 import socket
 
-MAC = "AA-BB-CC-DD-EE-FF"        # <- la MAC de tu PC
+# La MAC de la PC vive en ~/.config/homelab/red.env (PC_MAC=...), fuera del repo
+def leer_env(ruta):
+    datos = {}
+    with open(ruta) as f:
+        for linea in f:
+            linea = linea.strip()
+            if linea and not linea.startswith("#") and "=" in linea:
+                clave, valor = linea.split("=", 1)
+                datos[clave.strip()] = valor.strip().strip('"').strip("'")
+    return datos
+
+MAC = leer_env(os.path.expanduser("~/.config/homelab/red.env"))["PC_MAC"]
 BROADCAST = "192.168.100.255"    # broadcast de tu red de casa
 
 mac = bytes.fromhex(MAC.replace("-", "").replace(":", ""))

@@ -97,6 +97,7 @@ This repo stores how everything is set up, not the data or credentials. To rebui
 | What | Where it lives | How to recover it |
 | --- | --- | --- |
 | Kuma Push URLs | `~/.config/homelab/push.env` on the VM and the P30 | Copy from Kuma; see `push.env.example` |
+| Network details (PC MAC and IP, AdGuard IPv6) | `~/.config/homelab/red.env` on the VM and the P30 | See `red.env.example` |
 | Google Drive access | `rclone.conf` on the VM and the P30 | `rclone config` |
 | Cloudflare API token (DNS) | Nginx Proxy Manager | Password manager |
 | NPM, Kuma, and FileBrowser data | Each service's `data/` folder | Proxmox backup of VM 101 |

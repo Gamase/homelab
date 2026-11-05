@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Despierta la PC por Wake-on-LAN y espera a que RDP responda
-MAC="aa:bb:cc:dd:ee:ff"
-IP="100.x.x.x"
+. "$HOME/.config/homelab/red.env"
+MAC="$PC_MAC"
+IP="$PC_IP"
 LIMITE="${WAKEUP_LIMITE:-120}"
 INTERVALO="${WAKEUP_INTERVALO:-3}"
 
