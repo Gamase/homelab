@@ -1,0 +1,41 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -uo pipefail
+
+export HOME="/data/data/com.termux/files/home"
+export PATH="/data/data/com.termux/files/usr/bin:/system/bin:$PATH"
+
+DIR="$HOME/discord-bot"
+LOG="$DIR/actualizar-ytdlp.log"
+PY="$DIR/venv/bin/python"
+TMUX="/data/data/com.termux/files/usr/bin/tmux"
+SESION="discord-bot"
+PRENDER="$HOME/bin/prenderbot"
+
+fecha() { date '+%Y-%m-%d %H:%M:%S'; }
+
+antes=$("$PY" -c "import yt_dlp; print(yt_dlp.version.__version__)" 2>/dev/null || echo "?")
+antes_ejs=$("$PY" -c "from importlib.metadata import version; print(version('yt-dlp-ejs'))" 2>/dev/null || echo "?")
+echo "[$(fecha)] yt-dlp antes: $antes | yt-dlp-ejs antes: $antes_ejs" >> "$LOG"
+
+if ! "$PY" -m pip install --upgrade yt-dlp yt-dlp-ejs >> "$LOG" 2>&1; then
+    echo "[$(fecha)] ERROR actualizando yt-dlp / yt-dlp-ejs" >> "$LOG"
+    exit 1
+fi
+
+despues=$("$PY" -c "import yt_dlp; print(yt_dlp.version.__version__)" 2>/dev/null || echo "?")
+despues_ejs=$("$PY" -c "from importlib.metadata import version; print(version('yt-dlp-ejs'))" 2>/dev/null || echo "?")
+echo "[$(fecha)] yt-dlp despues: $despues | yt-dlp-ejs despues: $despues_ejs" >> "$LOG"
+
+if [ "$antes" = "$despues" ] && [ "$antes_ejs" = "$despues_ejs" ]; then
+    echo "[$(fecha)] sin cambios; no se reinicia el bot" >> "$LOG"
+    exit 0
+fi
+
+if "$TMUX" has-session -t "$SESION" 2>/dev/null; then
+    echo "[$(fecha)] reiniciando bot para cargar yt-dlp $despues" >> "$LOG"
+    "$TMUX" kill-session -t "$SESION" 2>/dev/null
+    sleep 2
+    "$PRENDER" >> "$LOG" 2>&1
+else
+    echo "[$(fecha)] el bot no estaba corriendo" >> "$LOG"
+fi

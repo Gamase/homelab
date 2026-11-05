@@ -1,0 +1,18 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -uo pipefail
+
+DIR="$HOME/discord-bot"
+cd "$DIR" || { echo "❌ No existe $DIR"; exit 1; }
+
+echo "📥 Bajando cambios de GitHub..."
+if ! git pull; then
+    echo "❌ Falló el git pull. El bot sigue como estaba."
+    exit 1
+fi
+
+if [ -f requirements.txt ]; then
+    echo "📦 Revisando dependencias..."
+    "$DIR/venv/bin/pip" install -q -r requirements.txt
+fi
+
+reiniciarbot

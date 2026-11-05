@@ -1,0 +1,27 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -uo pipefail
+
+SESSION="discord-bot"
+DIR="$HOME/discord-bot"
+PATRON="$DIR/venv/bin/python -u main.py"
+
+apagado=0
+
+if tmux has-session -t "$SESSION" 2>/dev/null; then
+    tmux kill-session -t "$SESSION"
+    apagado=1
+fi
+
+# Por si quedó un proceso huérfano fuera de tmux
+if pgrep -f "$PATRON" >/dev/null 2>&1; then
+    pkill -f "$PATRON"
+    sleep 1
+    pgrep -f "$PATRON" >/dev/null 2>&1 && pkill -9 -f "$PATRON"
+    apagado=1
+fi
+
+if [ "$apagado" -eq 1 ]; then
+    echo "🛑 Bot apagado."
+else
+    echo "ℹ️  El bot no estaba encendido."
+fi

@@ -1,0 +1,6 @@
+#!/data/data/com.termux/files/usr/bin/bash
+echo "🔄 Reiniciando bot..."
+apagarbot
+sleep 1
+prenderbot
+
