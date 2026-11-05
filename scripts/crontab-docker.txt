@@ -1,0 +1,2 @@
+0 4 * * * /home/gamase/bin/respaldo-buzon.sh
+*/5 * * * * /home/gamase/bin/check-dns-ipv6.sh
