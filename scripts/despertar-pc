@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Despierta la PC por Wake-on-LAN y espera a que RDP responda
+MAC="aa:bb:cc:dd:ee:ff"
+IP="100.x.x.x"
+LIMITE="${WAKEUP_LIMITE:-120}"
+INTERVALO="${WAKEUP_INTERVALO:-3}"
+
+wakeonlan -i 192.168.100.255 "$MAC" >/dev/null
+echo "Paquete mágico enviado. Esperando RDP en $IP:3389..."
+
+inicio=$SECONDS
+while (( SECONDS - inicio < LIMITE )); do
+  if timeout 2 bash -c "</dev/tcp/$IP/3389" 2>/dev/null; then
+    echo "✓ PC lista en $((SECONDS - inicio)) s."
+    exit 0
+  fi
+  sleep "$INTERVALO"
+done
+
+echo "✗ La PC no respondió en ${LIMITE} s."
+exit 1
