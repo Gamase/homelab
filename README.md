@@ -1,18 +1,18 @@
 # Homelab
 
-Servidor casero con Proxmox VE que da DNS con bloqueo de anuncios y contenido para toda la casa, servicios en Docker con nombres y HTTPS propios, acceso remoto por Tailscale, monitoreo y respaldos automáticos. Un Huawei P30 Pro con Termux funciona como nodo secundario.
+Home server running Proxmox VE that provides network-wide DNS with ad and content blocking, Docker services with their own domain names and HTTPS, remote access through Tailscale, monitoring, and automated backups. A Huawei P30 Pro running Termux acts as a secondary node.
 
-Ningún servicio está expuesto a internet: todo se accede desde la red de casa o por Tailscale.
+No service is exposed to the internet: everything is reachable only from the home network or through Tailscale.
 
-## Arquitectura
+## Architecture
 
 ```mermaid
 graph TD
-    Router["Router Totalplay<br/>192.168.100.1"]
+    Router["Totalplay router<br/>192.168.100.1"]
     TS(("Tailscale"))
 
     subgraph PVE["OptiPlex 3060 Micro · Proxmox VE (.30)"]
-        AG["LXC 100 · AdGuard Home<br/>DNS de la casa (.31)"]
+        AG["LXC 100 · AdGuard Home<br/>Home DNS (.31)"]
         subgraph VM["VM 101 · docker (.32)"]
             NPM["Nginx Proxy Manager<br/>*.familiamtz.com + HTTPS"]
             Kuma["Uptime Kuma"]
@@ -22,9 +22,9 @@ graph TD
         end
     end
 
-    P30["Huawei P30 Pro · Termux<br/>nodo secundario (.11)"]
-    PC["PC Windows (.75)"]
-    Laptop["Laptop Arch"]
+    P30["Huawei P30 Pro · Termux<br/>secondary node (.11)"]
+    PC["Windows PC (.75)"]
+    Laptop["Arch laptop"]
 
     Router --- PVE
     Router --- P30
@@ -35,88 +35,88 @@ graph TD
     NPM --> FB
     NPM --> Home
     PVE -. "subnet router 192.168.100.0/24" .- TS
-    Laptop -. "acceso remoto" .- TS
+    Laptop -. "remote access" .- TS
 ```
 
-## Máquinas
+## Machines
 
-| Máquina | Rol | IP LAN |
+| Machine | Role | LAN IP |
 | --- | --- | --- |
-| OptiPlex 3060 Micro (`pve`) | Host Proxmox VE 9 · i5-8500T, 16 GB, SSD 256 GB | 192.168.100.30 |
+| OptiPlex 3060 Micro (`pve`) | Proxmox VE 9 host · i5-8500T, 16 GB RAM, 256 GB SSD | 192.168.100.30 |
 | LXC 100 `adguard` | AdGuard Home (Debian 13) | 192.168.100.31 |
-| VM 101 `docker` | Servicios en Docker (Debian 13, 4 núcleos, 6 GB) | 192.168.100.32 |
-| Huawei P30 Pro | Nodo secundario en Termux: SSH, bot de Discord, respaldos | 192.168.100.11 |
-| PC Windows | PC principal, despierta por Wake-on-LAN | 192.168.100.75 |
+| VM 101 `docker` | Docker services (Debian 13, 4 cores, 6 GB RAM) | 192.168.100.32 |
+| Huawei P30 Pro | Secondary node on Termux: SSH, Discord bot, backups | 192.168.100.11 |
+| Windows PC | Main desktop, woken up with Wake-on-LAN | 192.168.100.75 |
 
-Las IPs fijas son reservas DHCP en el router.
+Static IPs are DHCP reservations on the router.
 
-## Servicios
+## Services
 
-| Nombre | Servicio | Qué hace |
+| Name | Service | Purpose |
 | --- | --- | --- |
-| `inicio.familiamtz.com` | Homepage | Página de inicio con accesos y clima |
-| `archivos.familiamtz.com` | FileBrowser Quantum | Buzón de archivos por web |
-| `kuma.familiamtz.com` | Uptime Kuma | Monitoreo, alertas a ntfy |
-| `adguard.familiamtz.com` | AdGuard Home | DNS con bloqueo de anuncios, NSFW y Safe Search |
-| `proxmox.familiamtz.com` | Proxmox VE | Panel del servidor |
-| `npm.familiamtz.com` | Nginx Proxy Manager | Proxy inverso y certificados |
+| `inicio.familiamtz.com` | Homepage | Start page with shortcuts and weather |
+| `archivos.familiamtz.com` | FileBrowser Quantum | Web access to the shared file drop |
+| `kuma.familiamtz.com` | Uptime Kuma | Monitoring, alerts via ntfy |
+| `adguard.familiamtz.com` | AdGuard Home | DNS with ad, NSFW, and Safe Search filtering |
+| `proxmox.familiamtz.com` | Proxmox VE | Server dashboard |
+| `npm.familiamtz.com` | Nginx Proxy Manager | Reverse proxy and certificates |
 
-Cómo funcionan los nombres: AdGuard responde `*.familiamtz.com` con la IP de la VM, y Nginx Proxy Manager reparte cada nombre a su servicio con un certificado comodín de Let's Encrypt (validación por DNS de Cloudflare, renovación automática). Fuera de casa funciona igual porque el DNS de Tailscale apunta a AdGuard.
+How names work: AdGuard resolves `*.familiamtz.com` to the VM's IP, and Nginx Proxy Manager routes each name to its service using a Let's Encrypt wildcard certificate (Cloudflare DNS challenge, automatic renewal). It works the same away from home because Tailscale's DNS points to AdGuard.
 
-El buzón (`~/compartido` en la VM) también se accede por Samba como unidad de red en Windows y con las funciones de `dotfiles/homelab.zsh` desde la terminal.
+The file drop (`~/compartido` on the VM) is also available as a Samba network drive on Windows and through the shell functions in `dotfiles/homelab.zsh`.
 
-## Estructura del repo
+## Repository layout
 
 ```
 homelab/
-├── docker/              compose.yaml de cada servicio
-│   ├── filebrowser/     + config.yaml (va en data/config.yaml)
-│   ├── homepage/        + config/ (servicios, widgets, ajustes)
+├── docker/              compose.yaml for each service
+│   ├── filebrowser/     + config.yaml (goes in data/config.yaml)
+│   ├── homepage/        + config/ (services, widgets, settings)
 │   ├── npm/
 │   └── uptime-kuma/
-├── samba/               smb.conf de la VM
-├── scripts/             scripts de la VM docker + crontab
-├── p30/                 nodo P30: scripts, arranque de Termux, sshd_config, crontab
-└── dotfiles/            funciones del buzón y wakeup para zsh
+├── samba/               smb.conf from the VM
+├── scripts/             docker VM scripts + crontab
+├── p30/                 P30 node: scripts, Termux boot, sshd_config, crontab
+└── dotfiles/            file drop and wakeup functions for zsh
 ```
 
-## Respaldos
+## Backups
 
-| Nivel | Qué | Cuándo | Dónde |
+| Level | What | When | Where |
 | --- | --- | --- | --- |
-| Proxmox | LXC y VM completos (snapshot, ZSTD) | Diario 03:00, últimos 7 | Disco local del servidor |
-| P30 | Configuración del nodo | Diario 03:30 | Google Drive (30 días) |
-| Buzón | `~/compartido` con `rclone sync` | Diario 04:00 | Google Drive, con versiones anteriores 30 días |
+| Proxmox | Full LXC and VM (snapshot, ZSTD) | Daily 03:00, keep last 7 | Server's local disk |
+| P30 | Node configuration | Daily 03:30 | Google Drive (30 days) |
+| File drop | `~/compartido` via `rclone sync` | Daily 04:00 | Google Drive, previous versions kept 30 days |
 
-Cada script de respaldo avisa a Uptime Kuma con un monitor Push; si no llega el aviso en 25 horas, Kuma manda alerta.
+Each backup script reports to Uptime Kuma through a Push monitor; if no report arrives within 25 hours, Kuma sends an alert.
 
-## Secretos (no están en el repo)
+## Secrets (not in this repo)
 
-Este repo guarda cómo está armado todo, no los datos ni las credenciales. Para reconstruir hace falta:
+This repo stores how everything is set up, not the data or credentials. To rebuild, you need:
 
-| Qué | Dónde vive | Cómo recuperarlo |
+| What | Where it lives | How to recover it |
 | --- | --- | --- |
-| URLs Push de Kuma | `~/.config/homelab/push.env` en la VM y en el P30 | Copiar de Kuma; ver `push.env.example` |
-| Acceso a Google Drive | `rclone.conf` en la VM y en el P30 | `rclone config` |
-| Token de Cloudflare (DNS) | Nginx Proxy Manager | Gestor de contraseñas |
-| Datos de NPM, Kuma y FileBrowser | `data/` de cada servicio | Respaldo de Proxmox de la VM 101 |
-| Configuración de AdGuard | `/opt/AdGuardHome/AdGuardHome.yaml` | Respaldo de Proxmox del LXC 100 |
+| Kuma Push URLs | `~/.config/homelab/push.env` on the VM and the P30 | Copy from Kuma; see `push.env.example` |
+| Google Drive access | `rclone.conf` on the VM and the P30 | `rclone config` |
+| Cloudflare API token (DNS) | Nginx Proxy Manager | Password manager |
+| NPM, Kuma, and FileBrowser data | Each service's `data/` folder | Proxmox backup of VM 101 |
+| AdGuard configuration | `/opt/AdGuardHome/AdGuardHome.yaml` | Proxmox backup of LXC 100 |
 
-## Restaurar un servicio
+## Restoring a service
 
 ```bash
 ssh docker
-mkdir -p ~/stacks/<servicio>
-cp ~/homelab/docker/<servicio>/compose.yaml ~/stacks/<servicio>/
-cd ~/stacks/<servicio> && docker compose up -d
+mkdir -p ~/stacks/<service>
+cp ~/homelab/docker/<service>/compose.yaml ~/stacks/<service>/
+cd ~/stacks/<service> && docker compose up -d
 ```
 
-Para FileBrowser, copiar además `config.yaml` a `~/stacks/filebrowser/data/config.yaml`. Para Homepage, copiar la carpeta `config/`.
+For FileBrowser, also copy `config.yaml` to `~/stacks/filebrowser/data/config.yaml`. For Homepage, copy the `config/` folder.
 
-## Pendientes
+## Roadmap
 
-- Segundo módulo de 16 GB de RAM (dual channel).
-- Disco de 2.5" para sacar los respaldos de Proxmox del mismo SSD.
-- Monitor externo (Healthchecks.io) que avise si el servidor completo se cae.
-- Cuentas de FileBrowser para la familia, separadas del buzón.
-- Immich (fotos) y Jellyfin (películas) con el disco nuevo.
+- Second 16 GB RAM module (dual channel).
+- 2.5" drive to move Proxmox backups off the system SSD.
+- External monitor (Healthchecks.io) to alert if the whole server goes down.
+- FileBrowser accounts for the family, separate from the file drop.
+- Immich (photos) and Jellyfin (movies) once the new drive is in.
