@@ -21,3 +21,67 @@
         href: https://npm.familiamtz.com
         description: Nombres y certificados
         icon: nginx-proxy-manager.png
+- Multimedia:
+    - Jellyfin:
+        href: https://jellyfin.familiamtz.com
+        description: Películas, series y anime
+        icon: jellyfin.png
+        widget:
+          type: jellyfin
+          version: 2
+          url: http://192.168.100.33:8096
+          key: "{{HOMEPAGE_VAR_JELLYFIN_KEY}}"
+          enableBlocks: true
+          enableNowPlaying: true
+    - Seerr:
+        href: https://seerr.familiamtz.com
+        description: Pedir películas y series
+        icon: jellyseerr.png
+        widget:
+          type: jellyseerr
+          url: http://192.168.100.32:5055
+          key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
+
+- Descargas:
+    - qBittorrent:
+        href: https://qbittorrent.familiamtz.com
+        description: Torrents
+        icon: qbittorrent.png
+        widget:
+          type: qbittorrent
+          url: http://192.168.100.32:8090
+          username: "{{HOMEPAGE_VAR_QBIT_USER}}"
+          password: "{{HOMEPAGE_VAR_QBIT_PASS}}"
+    - Sonarr:
+        href: https://sonarr.familiamtz.com
+        description: Series y anime
+        icon: sonarr.png
+        widget:
+          type: sonarr
+          url: http://192.168.100.32:8989
+          key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
+    - Radarr:
+        href: https://radarr.familiamtz.com
+        description: Películas
+        icon: radarr.png
+        widget:
+          type: radarr
+          url: http://192.168.100.32:7878
+          key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
+    - Prowlarr:
+        href: https://prowlarr.familiamtz.com
+        description: Indexadores
+        icon: prowlarr.png
+        widget:
+          type: prowlarr
+          url: http://192.168.100.32:9696
+          key: "{{HOMEPAGE_VAR_PROWLARR_KEY}}"
+
+    - Bazarr:
+        href: https://bazarr.familiamtz.com
+        description: Subtítulos
+        icon: bazarr.png
+        widget:
+          type: bazarr
+          url: http://192.168.100.32:6767
+          key: "{{HOMEPAGE_VAR_BAZARR_KEY}}"

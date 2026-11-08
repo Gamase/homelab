@@ -1,0 +1,75 @@
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Tijuana
+    volumes:
+      - ./prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Tijuana
+    volumes:
+      - ./sonarr:/config
+      - /data:/data
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Tijuana
+    volumes:
+      - ./radarr:/config
+      - /data:/data
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=info
+      - TZ=America/Tijuana
+    restart: unless-stopped
+
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    container_name: seerr
+    init: true
+    environment:
+      - TZ=America/Tijuana
+    volumes:
+      - ./seerr:/app/config
+    ports:
+      - 5055:5055
+    restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Tijuana
+    volumes:
+      - ./bazarr:/config
+      - /data:/data
+    ports:
+      - 6767:6767
+    restart: unless-stopped
